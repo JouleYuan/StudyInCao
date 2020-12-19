@@ -79,6 +79,8 @@ def verify_admin_token(parser):
 
 
 def verify_id_token(parser, id):
+    if id is None:
+        return False
     parser.add_argument('Token', location='headers')
     headers = parser.parse_args()
     try:
