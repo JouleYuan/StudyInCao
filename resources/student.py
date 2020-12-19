@@ -127,7 +127,7 @@ class StudentDetail(Resource):
         try:
             student = StudentModel.query.get(id)
             student.email = args['email']
-            args['avatar'].save('/home/StudyInCao/file/avatar/student/' + str(id) + '.jpg')
+            args['avatar'].save('file/avatar/student/' + str(id) + '.jpg')
             student.avatar = True
             db.session.commit()
             return pretty_result(code.OK)
