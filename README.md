@@ -12,7 +12,7 @@ pip install -r requirements.txt
 
 Create database studyincao and execute the database.sql file in mysql.
 
-```mysql
+```
 CREAT DATABASE studyincao;
 SOURCE database.sql;
 ```
