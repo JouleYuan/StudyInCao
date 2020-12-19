@@ -3,7 +3,7 @@ from flask_restful.reqparse import RequestParser
 from sqlalchemy.exc import SQLAlchemyError
 from models import db
 from models.student import StudentModel
-from common import code, pretty_result
+from common import code, pretty_result, file
 from common.auth import verify_admin_token, verify_id_token
 from werkzeug.datastructures import FileStorage
 
@@ -19,7 +19,7 @@ class AllStudents(Resource):
                     'gender': student.gender,
                     'class_name': student.class_name,
                     'email': student.email,
-                    # 'avatar': student.avatar
+                    'avatar': student.avatar
                 }
                 for student in students
             ]
@@ -43,7 +43,7 @@ class Student(Resource):
                 'gender': student.gender,
                 'class_name': student.class_name,
                 'email': student.email,
-                # 'avatar': student.avatar
+                'avatar': student.avatar
             }
             return pretty_result(code.OK, data=data)
         except SQLAlchemyError as e:
@@ -102,6 +102,7 @@ class Student(Resource):
 
         try:
             student = StudentModel.query.get(id)
+            file.delete_avatar(student, 'student')
             db.session.delete(student)
             db.session.commit()
             return pretty_result(code.OK)
@@ -126,9 +127,9 @@ class StudentDetail(Resource):
 
         try:
             student = StudentModel.query.get(id)
-            student.email = args['email']
-            args['avatar'].save('file/avatar/student/' + str(id) + '.jpg')
-            student.avatar = True
+            if args['email'] is not None:
+                student.email = args['email']
+            file.upload_avatar(args['avatar'], student, 'student')
             db.session.commit()
             return pretty_result(code.OK)
         except SQLAlchemyError as e:

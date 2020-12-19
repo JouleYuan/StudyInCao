@@ -11,5 +11,5 @@ class TeacherModel(db.Model):
     address = db.Column(db.String(100), nullable=True)
     phone = db.Column(db.String(20), nullable=True)
     email = db.Column(db.String(50), nullable=True)
-    description = db.Column(db.Text)
-    avatar = db.Column(db.LargeBinary(length=(2**24)-1), nullable=True)
+    description = db.Column(db.Text, nullable=True)
+    avatar = db.Column(db.String(10), nullable=True)

@@ -8,4 +8,4 @@ class StudentModel(db.Model):
     gender = db.Column(db.BOOLEAN)
     class_name = db.Column(db.String(50))
     email = db.Column(db.String(50), nullable=True)
-    avatar = db.Column(db.BOOLEAN)
+    avatar = db.Column(db.String(10), nullable=True)
