@@ -25,14 +25,15 @@ class StudentCourseList(Resource):
                 course = CourseModel.query.get(c.course_id)
                 teacher = TeacherModel.query.get(course.teacher_id)
                 time = course.time.split(';')
-                for t in time:
+                address = course.address.split(';')
+                for i in range(len(time)):
                     data.append({
                         'id': course.id,
                         'name': course.name,
                         'teacher': teacher.name,
-                        'no': list(map(int, t.split(',')[1:])),
-                        'date': int(t.split(',')[0]),
-                        'address': course.address
+                        'no': list(map(int, time[i].split(',')[1:])),
+                        'date': int(time[i].split(',')[0]),
+                        'address': address[i]
                     })
             return pretty_result(code.OK, data=data)
         except SQLAlchemyError as e:
@@ -55,13 +56,14 @@ class TeacherCourseList(Resource):
             courses = CourseModel.query.filter_by(teacher_id=teacher_id).all()
             for course in courses:
                 time = course.time.split(';')
-                for t in time:
+                address = course.address.split(';')
+                for i in range(len(time)):
                     data.append({
                         'id': course.id,
                         'name': course.name,
-                        'no': list(map(int, t.split(',')[1:])),
-                        'date': int(t.split(',')[0]),
-                        'address': course.address
+                        'no': list(map(int, time[i].split(',')[1:])),
+                        'date': int(time[i].split(',')[0]),
+                        'address': address[i]
                     })
             return pretty_result(code.OK, data=data)
         except SQLAlchemyError as e:
