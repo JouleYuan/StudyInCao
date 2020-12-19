@@ -10,4 +10,19 @@ Install the required dependencies.
 pip install -r requirements.txt
 ```
 
-After that, you can run this back end by running app.py.
+Create your own directory to store uploaded files. The file directory is shown as followed.
+
+```
+file
+└── avatar
+    ├── student
+    └── teacher
+```
+
+If you are to run this on Linux Server, input the following in the shell.
+
+```
+gunicorn app:app -c gunicorn.conf.py --daemon
+```
+
+If you are to run this on Windows, you can run this back end by running app.py.
