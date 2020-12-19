@@ -261,7 +261,7 @@ CREATE TABLE `student` (
   `gender` tinyint NOT NULL,
   `class_name` varchar(50) NOT NULL,
   `email` varchar(50) DEFAULT NULL,
-  `avatar` tinyint NOT NULL DEFAULT '0',
+  `avatar` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `student_user` FOREIGN KEY (`id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -273,7 +273,7 @@ CREATE TABLE `student` (
 
 LOCK TABLES `student` WRITE;
 /*!40000 ALTER TABLE `student` DISABLE KEYS */;
-INSERT INTO `student` VALUES ('1928374650','袁浩然',1,'软件工程1801',NULL,0),('9876543210','黄沈一',1,'软件工程1802','huang@zju.edu.cn',1);
+INSERT INTO `student` VALUES ('1928374650','袁浩然',1,'软件工程1801',NULL,NULL);
 /*!40000 ALTER TABLE `student` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -294,7 +294,7 @@ CREATE TABLE `teacher` (
   `phone` varchar(20) DEFAULT NULL,
   `email` varchar(50) DEFAULT NULL,
   `description` text,
-  `avatar` mediumblob,
+  `avatar` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `teacher_user` FOREIGN KEY (`id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -349,4 +349,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-12-19 17:10:19
+-- Dump completed on 2020-12-19 21:34:42
