@@ -5,6 +5,7 @@ from models import db
 from models.student import StudentModel
 from common import code, pretty_result
 from common.auth import verify_admin_token, verify_id_token
+from werkzeug.datastructures import FileStorage
 
 
 class AllStudents(Resource):
@@ -120,13 +121,14 @@ class StudentDetail(Resource):
             return pretty_result(code.AUTHORIZATION_ERROR)
 
         self.parser.add_argument('email', type=str, location="args")
-        """self.parser.add_argument('avatar', type=int, location="args")"""
+        self.parser.add_argument('avatar', type=FileStorage, location="files")
         args = self.parser.parse_args()
 
         try:
             student = StudentModel.query.get(id)
             student.email = args['email']
-            """student.avatar = """
+            args['avatar'].save('/StudyInCao/file/avatar/student/' + str(id) + '.jpg')
+            student.avatar = True
             db.session.commit()
             return pretty_result(code.OK)
         except SQLAlchemyError as e:
