@@ -10,4 +10,4 @@ Install the required dependencies.
 pip install -r requirements.txt
 ```
 
-After that, you can run the back end by running the app.py.
+After that, you can run this back end by running app.py.
