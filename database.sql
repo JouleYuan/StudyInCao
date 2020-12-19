@@ -25,6 +25,7 @@ DROP TABLE IF EXISTS `chapter`;
 CREATE TABLE `chapter` (
   `id` int NOT NULL AUTO_INCREMENT,
   `course_id` int NOT NULL,
+  `no` int NOT NULL,
   `title` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `chapter_course_idx` (`course_id`),
@@ -61,7 +62,7 @@ CREATE TABLE `course` (
   KEY `course_user_idx` (`assistant_id`),
   CONSTRAINT `course_assistant` FOREIGN KEY (`assistant_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `course_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `teacher` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -70,7 +71,7 @@ CREATE TABLE `course` (
 
 LOCK TABLES `course` WRITE;
 /*!40000 ALTER TABLE `course` DISABLE KEYS */;
-INSERT INTO `course` VALUES (1,'c语言程序设计','1234567890',NULL,'周一,3,4;周三,7,8','紫金港东1-208',NULL),(2,'操作系统','1234567890',NULL,'周二,3,4;周四,7,8','玉泉曹光彪二期-204',NULL);
+INSERT INTO `course` VALUES (1,'c语言程序设计','1234567890',NULL,'1,3,4;3,7,8','紫金港东1-208;紫金港东1-303',NULL),(2,'操作系统','1234567890',NULL,'2,3,4;4,7,8','玉泉曹光彪二期-204;玉泉曹光彪二期-204',NULL),(3,'JAVA应用技术','1111111111',NULL,'4,3,4;4,7,8','玉泉曹光彪二期-204;玉泉曹光彪二期-204',NULL),(4,'计算机网络','1111111111',NULL,'1,3,4;1,7,8','玉泉曹光彪二期-204;玉泉曹光彪二期-304',NULL);
 /*!40000 ALTER TABLE `course` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -91,7 +92,7 @@ CREATE TABLE `course_student` (
   KEY `course_student_student_idx` (`student_id`),
   CONSTRAINT `course_student_course` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `course_student_student` FOREIGN KEY (`student_id`) REFERENCES `student` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -100,7 +101,7 @@ CREATE TABLE `course_student` (
 
 LOCK TABLES `course_student` WRITE;
 /*!40000 ALTER TABLE `course_student` DISABLE KEYS */;
-INSERT INTO `course_student` VALUES (1,1,'1928374650',NULL),(2,2,'1928374650',NULL);
+INSERT INTO `course_student` VALUES (1,1,'1928374650',NULL),(2,2,'1928374650',NULL),(5,1,'3180103164',NULL),(6,2,'3180103164',NULL);
 /*!40000 ALTER TABLE `course_student` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -276,7 +277,7 @@ CREATE TABLE `student` (
 
 LOCK TABLES `student` WRITE;
 /*!40000 ALTER TABLE `student` DISABLE KEYS */;
-INSERT INTO `student` VALUES ('1928374650','袁浩然',1,'软件工程1801',NULL,NULL);
+INSERT INTO `student` VALUES ('1928374650','袁浩然',1,'软件工程1801',NULL,NULL),('3180103164','黄沈一',1,'软件工程1802',NULL,NULL);
 /*!40000 ALTER TABLE `student` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -309,7 +310,7 @@ CREATE TABLE `teacher` (
 
 LOCK TABLES `teacher` WRITE;
 /*!40000 ALTER TABLE `teacher` DISABLE KEYS */;
-INSERT INTO `teacher` VALUES ('1234567890','翁恺',0,'计算机科学与技术','教授',NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `teacher` VALUES ('1111111111','鲁伟明',1,'计算机科学与技术','教授','玉泉曹光彪大楼102','13322222124',NULL,'鲁伟明毕业于浙大。。。',NULL),('1234567890','翁恺',0,'计算机科学与技术','教授',NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `teacher` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -339,7 +340,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES ('1234567890','ba00819f263287af1ff0100c5a323355','你的身份证号码是多少？','e807f1fcf82d132f9bb018ca6738a19f',0,1,0,0),('1928374650','4297f44b13955235245b2497399d7a93','你的身份证号码是多少？','f5bb0c8de146c67b44babbf4e6584cc0',1,0,0,0),('3180103164','25f9e794323b453885f5181f1b624d0b','你的身份证号码是多少?','6ebe76c9fb411be97b3b0d48b791a7c9',1,0,0,1),('9876543210','e10adc3949ba59abbe56e057f20f883e','你的身份证号码是多少？','e10adc3949ba59abbe56e057f20f883e',1,0,0,0);
+INSERT INTO `user` VALUES ('1111111111','e10adc3949ba59abbe56e057f20f883e','你的身份证号码是多少？','e10adc3949ba59abbe56e057f20f883e',0,1,0,0),('1234567890','ba00819f263287af1ff0100c5a323355','你的身份证号码是多少？','e807f1fcf82d132f9bb018ca6738a19f',0,1,0,0),('1928374650','4297f44b13955235245b2497399d7a93','你的身份证号码是多少？','f5bb0c8de146c67b44babbf4e6584cc0',1,0,0,0),('3180103164','25f9e794323b453885f5181f1b624d0b','你的身份证号码是多少?','6ebe76c9fb411be97b3b0d48b791a7c9',1,0,0,1),('9876543210','e10adc3949ba59abbe56e057f20f883e','你的身份证号码是多少？','e10adc3949ba59abbe56e057f20f883e',1,0,0,0);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -352,4 +353,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-12-19 23:43:11
+-- Dump completed on 2020-12-20  2:10:25
