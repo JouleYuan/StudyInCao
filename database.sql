@@ -82,14 +82,16 @@ DROP TABLE IF EXISTS `course_student`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `course_student` (
+  `id` int NOT NULL AUTO_INCREMENT,
   `course_id` int NOT NULL,
   `student_id` varchar(10) NOT NULL,
   `grade` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
   KEY `course1_idx` (`course_id`),
   KEY `course_student_student_idx` (`student_id`),
   CONSTRAINT `course_student_course` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `course_student_student` FOREIGN KEY (`student_id`) REFERENCES `student` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -98,6 +100,7 @@ CREATE TABLE `course_student` (
 
 LOCK TABLES `course_student` WRITE;
 /*!40000 ALTER TABLE `course_student` DISABLE KEYS */;
+INSERT INTO `course_student` VALUES (1,1,'1928374650',NULL),(2,2,'1928374650',NULL);
 /*!40000 ALTER TABLE `course_student` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -349,4 +352,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-12-19 21:34:42
+-- Dump completed on 2020-12-19 23:43:11
