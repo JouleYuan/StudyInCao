@@ -235,8 +235,8 @@ CREATE TABLE `resource` (
   `id` int NOT NULL AUTO_INCREMENT,
   `chapter_id` int NOT NULL,
   `title` varchar(50) NOT NULL,
-  `file` text NOT NULL,
-  `content` text,
+  `file` varchar(255) NOT NULL,
+  `content` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `resource_chapter_idx` (`chapter_id`),
   CONSTRAINT `resource_chapter` FOREIGN KEY (`chapter_id`) REFERENCES `chapter` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -353,4 +353,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-12-20  2:10:25
+-- Dump completed on 2020-12-20 23:33:51
