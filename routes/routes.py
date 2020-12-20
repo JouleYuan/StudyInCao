@@ -37,5 +37,5 @@ api.add_resource(grade.CourseGrade, 'grade/course/<int:course_id>')
 api.add_resource(grade.StudentGrade, 'grade/student/<string:student_id>')
 
 api.add_resource(chapter.AllChapter, 'chapter')
-api.add_resource(chapter.PostChapter, 'chapter')
+api.add_resource(chapter.CourseChapter, 'chapter/<int:course_id>')
 api.add_resource(chapter.Chapter, 'chapter/<int:course_id>/<int:no>')
