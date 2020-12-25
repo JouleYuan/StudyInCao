@@ -5,26 +5,37 @@ from models import db
 from models.course import CourseModel
 from models.course_student import CourseStudentModel
 from models.user import UserModel
-from common import code, pretty_result
+from models.teacher import TeacherModel
+from common import code, pretty_result, file
 from common.auth import verify_admin_token, verify_id_token
+from werkzeug.datastructures import FileStorage
 
 
 class AllCourses(Resource):
     def get(self):
         try:
+            data = []
             courses = CourseModel.query.all()
-            data = [
-                {
+            for course in courses:
+                teacher = TeacherModel.query.get(course.teacher_id)
+                data.append({
                     'id': course.id,
                     'name': course.name,
                     'teacher_id': course.teacher_id,
+                    'teacher_name': teacher.name,
                     'assistant_id': course.assistant_id,
                     'time': course.time,
                     'address': course.address,
-                    'description': course.description
-                }
-                for course in courses
-            ]
+                    'classification': teacher.school,
+                    'general': course.general,
+                    'description': course.description,
+                    'introduce': course.introduce,
+                    'plan': course.plan,
+                    'material': course.material,
+                    'exam': course.exam,
+                    'request': course.request,
+                    'avatar': course.avatar
+                })
             return pretty_result(code.OK, data=data)
         except SQLAlchemyError as e:
             print(e)
@@ -71,13 +82,24 @@ class Course(Resource):
     def get(self, id):
         try:
             course = CourseModel.query.get(id)
+            teacher = TeacherModel.query.get(course.teacher_id)
             data = {
+                'id': course.id,
                 'name': course.name,
                 'teacher_id': course.teacher_id,
+                'teacher_name': teacher.name,
                 'assistant_id': course.assistant_id,
                 'time': course.time,
                 'address': course.address,
-                'description': course.description
+                'classification': teacher.school,
+                'general': course.general,
+                'description': course.description,
+                'introduce': course.introduce,
+                'plan': course.plan,
+                'material': course.material,
+                'exam': course.exam,
+                'request': course.request,
+                'avatar': course.avatar
             }
             return pretty_result(code.OK, data=data)
         except SQLAlchemyError as e:
@@ -135,8 +157,15 @@ class CourseDetail(Resource):
             if verify_id_token(self.token_parser, course.teacher_id) is False:
                 return pretty_result(code.AUTHORIZATION_ERROR)
 
-            self.parser.add_argument('assistant_id', type=str, location="args")
-            self.parser.add_argument('description', type=str, location="args")
+            self.parser.add_argument('assistant_id', type=str, location="form")
+            self.parser.add_argument('general', type=str, location="form")
+            self.parser.add_argument('description', type=str, location="form")
+            self.parser.add_argument('introduce', type=str, location="form")
+            self.parser.add_argument('plan', type=str, location="form")
+            self.parser.add_argument('material', type=str, location="form")
+            self.parser.add_argument('exam', type=str, location="form")
+            self.parser.add_argument('request', type=str, location="form")
+            self.parser.add_argument('avatar', type=FileStorage, location="files")
             args = self.parser.parse_args()
 
             if args['assistant_id'] is not None:
@@ -144,8 +173,21 @@ class CourseDetail(Resource):
                 if not user.is_assistant:
                     return pretty_result(code.OTHER_ERROR, 'assistant does not exist')
                 course.assistant_id = args['assistant_id']
+            if args['general'] is not None:
+                course.general = args['general']
             if args['description'] is not None:
                 course.description = args['description']
+            if args['introduce'] is not None:
+                course.introduce = args['introduce']
+            if args['plan'] is not None:
+                course.plan = args['plan']
+            if args['material'] is not None:
+                course.material = args['material']
+            if args['exam'] is not None:
+                course.exam = args['exam']
+            if args['request'] is not None:
+                course.request = args['request']
+            file.upload_avatar(args['avatar'], course, 'course')
             db.session.commit()
             return pretty_result(code.OK)
         except SQLAlchemyError as e:
