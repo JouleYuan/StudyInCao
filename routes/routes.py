@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask_restful import Api
-from resources import auth, user, student, teacher, course, grade, courseList, chapter, resource
+from resources import auth, user, student, teacher, course, grade, courseList, chapter, resource, image
 
 routes = Blueprint('routes', __name__)
 
@@ -43,3 +43,5 @@ api.add_resource(chapter.Chapter, 'chapter/<int:course_id>/<int:no>')
 api.add_resource(resource.AllResource, 'resource')
 api.add_resource(resource.ChapterResource, 'resource/<int:chapter_id>')
 api.add_resource(resource.ChapterNoResource, 'resource/<int:chapter_id>/<int:no>')
+
+api.add_resource(image.Image, 'image/<string:type>/<int:id>')

@@ -12,17 +12,19 @@ class AllStudents(Resource):
     def get(self):
         try:
             students = StudentModel.query.all()
-            data = [
-                {
+            data = []
+            for student in students:
+                avatar = None
+                if student.avatar is not None:
+                    avatar = 'image/student/' + str(student.id)
+                data.append({
                     'id': student.id,
                     'name': student.name,
                     'gender': student.gender,
                     'class_name': student.class_name,
                     'email': student.email,
-                    'avatar': student.avatar
-                }
-                for student in students
-            ]
+                    'avatar': avatar
+                })
             return pretty_result(code.OK, data=data)
         except SQLAlchemyError as e:
             print(e)
@@ -38,12 +40,15 @@ class Student(Resource):
     def get(self, id):
         try:
             student = StudentModel.query.get(id)
+            avatar = None
+            if student.avatar is not None:
+                avatar = 'image/student/' + str(student.id)
             data = {
                 'name': student.name,
                 'gender': student.gender,
                 'class_name': student.class_name,
                 'email': student.email,
-                'avatar': student.avatar
+                'avatar': avatar
             }
             return pretty_result(code.OK, data=data)
         except SQLAlchemyError as e:

@@ -12,8 +12,12 @@ class AllTeachers(Resource):
     def get(self):
         try:
             teachers = TeacherModel.query.all()
-            data = [
-                {
+            data = []
+            for teacher in teachers:
+                avatar = None
+                if teacher.avatar is not None:
+                    avatar = 'image/teacher/' + str(teacher.id)
+                data.append({
                     'id': teacher.id,
                     'name': teacher.name,
                     'gender': teacher.gender,
@@ -23,10 +27,8 @@ class AllTeachers(Resource):
                     'phone': teacher.phone,
                     'email': teacher.email,
                     'description': teacher.description,
-                    'avatar': teacher.avatar
-                }
-                for teacher in teachers
-            ]
+                    'avatar': avatar
+                })
             return pretty_result(code.OK, data=data)
         except SQLAlchemyError as e:
             print(e)
@@ -42,6 +44,9 @@ class Teacher(Resource):
     def get(self, id):
         try:
             teacher = TeacherModel.query.get(id)
+            avatar = None
+            if teacher.avatar is not None:
+                avatar = 'image/teacher/' + str(teacher.id)
             data = {
                 'id': teacher.id,
                 'name': teacher.name,
@@ -52,7 +57,7 @@ class Teacher(Resource):
                 'phone': teacher.phone,
                 'email': teacher.email,
                 'description': teacher.description,
-                'avatar': teacher.avatar
+                'avatar': avatar
             }
             return pretty_result(code.OK, data=data)
         except SQLAlchemyError as e:

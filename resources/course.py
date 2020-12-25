@@ -18,6 +18,9 @@ class AllCourses(Resource):
             courses = CourseModel.query.all()
             for course in courses:
                 teacher = TeacherModel.query.get(course.teacher_id)
+                avatar = None
+                if course.avatar is not None:
+                    avatar = 'image/course/' + str(course.id)
                 data.append({
                     'id': course.id,
                     'name': course.name,
@@ -34,7 +37,7 @@ class AllCourses(Resource):
                     'material': course.material,
                     'exam': course.exam,
                     'request': course.request,
-                    'avatar': course.avatar
+                    'avatar': avatar
                 })
             return pretty_result(code.OK, data=data)
         except SQLAlchemyError as e:
@@ -83,6 +86,9 @@ class Course(Resource):
         try:
             course = CourseModel.query.get(id)
             teacher = TeacherModel.query.get(course.teacher_id)
+            avatar = None
+            if course.avatar is not None:
+                avatar = 'image/course/' + str(course.id)
             data = {
                 'id': course.id,
                 'name': course.name,
@@ -99,7 +105,7 @@ class Course(Resource):
                 'material': course.material,
                 'exam': course.exam,
                 'request': course.request,
-                'avatar': course.avatar
+                'avatar': avatar
             }
             return pretty_result(code.OK, data=data)
         except SQLAlchemyError as e:
