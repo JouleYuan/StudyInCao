@@ -4,6 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from models import db
 from models.course import CourseModel
 from models.course_student import CourseStudentModel
+from models.student import StudentModel
 from common import code, pretty_result
 from common.auth import verify_admin_token, verify_id_token
 
@@ -63,11 +64,18 @@ class CourseGrade(Resource):
                     and verify_admin_token(self.token_parser) is False:
                 return pretty_result(code.AUTHORIZATION_ERROR)
 
+            data = []
             course_students = CourseStudentModel.query.filter_by(course_id=course_id).all()
-            data = [{
-                'student_id': course_student.student_id,
-                'grade': course_student.grade
-            } for course_student in course_students]
+            for course_student in course_students:
+                student = StudentModel.query.get(course_student.student_id)
+                data.append({
+                    'id': student.id,
+                    'name': student.name,
+                    'gender': student.gender,
+                    'class_name': student.class_name,
+                    'grade': course_student.grade
+                })
+
             return pretty_result(code.OK, data=data)
         except SQLAlchemyError as e:
             print(e)
