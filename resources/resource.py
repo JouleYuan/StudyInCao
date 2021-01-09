@@ -6,8 +6,9 @@ from models import db
 from models.course import CourseModel
 from models.chapter import ChapterModel
 from models.resource import ResourceModel
-from common import code, pretty_result
+from common import code, pretty_result, file
 from common.auth import verify_id_token
+from werkzeug.datastructures import FileStorage
 
 
 class AllResource(Resource):
@@ -16,11 +17,11 @@ class AllResource(Resource):
             resources = ResourceModel.query.all()
             data = [
                 {
+                    'id': resource.id,
                     'chapter_id': resource.chapter_id,
-                    'no': resource.no,
                     'title': resource.title,
                     'content': resource.content,
-                    'file': resource.file
+                    'file': 'file/resource/' + str(resource.id)
                 }
                 for resource in resources
             ]
@@ -41,10 +42,10 @@ class ChapterResource(Resource):
             resources = ResourceModel.query.filter_by(chapter_id=chapter_id).all()
             data = [
                 {
-                    'no': resource.no,
+                    'id': resource.id,
                     'title': resource.title,
                     'content': resource.content,
-                    'file': resource.file
+                    'file': 'file/resource/' + str(resource.id)
                 }
                 for resource in resources
             ]
@@ -54,27 +55,7 @@ class ChapterResource(Resource):
             db.session.rollback()
             return pretty_result(code.DB_ERROR)
 
-
-class ChapterNoResource(Resource):
-    def __init__(self):
-        self.parser = RequestParser()
-        self.token_parser = RequestParser()
-
-    def get(self, chapter_id, no):
-        try:
-            resource = ResourceModel.query.filter_by(chapter_id=chapter_id, no=no).first()
-            data = {
-                'title': resource.title,
-                'content': resource.content,
-                'file': resource.file
-            }
-            return pretty_result(code.OK, data=data)
-        except SQLAlchemyError as e:
-            print(e)
-            db.session.rollback()
-            return pretty_result(code.DB_ERROR)
-
-    def post(self, chapter_id, no):
+    def post(self, chapter_id):
         try:
             chapter = ChapterModel.query.get(chapter_id)
             course = CourseModel.query.get(chapter.course_id)
@@ -83,19 +64,11 @@ class ChapterNoResource(Resource):
                 return pretty_result(code.AUTHORIZATION_ERROR)
 
             self.parser.add_argument('title', type=str, location="args")
-            self.parser.add_argument('content', type=str, location="form")
             args = self.parser.parse_args()
-
-            resource = ResourceModel.query.filter_by(course_id=chapter_id, no=no).first()
-            if resource is not None:
-                return pretty_result(code.DB_ERROR)
 
             resource = ResourceModel(
                 chapter_id=chapter_id,
-                no=no,
-                title=args['title'],
-                content=args['content'],
-                file=''
+                title=args['title']
             )
             db.session.add(resource)
             db.session.commit()
@@ -105,9 +78,31 @@ class ChapterNoResource(Resource):
             db.session.rollback()
             return pretty_result(code.DB_ERROR)
 
-    def put(self, chapter_id, no):
+
+class IdResource(Resource):
+    def __init__(self):
+        self.parser = RequestParser()
+        self.token_parser = RequestParser()
+
+    def get(self, id):
         try:
-            chapter = ChapterModel.query.get(chapter_id)
+            resource = ResourceModel.query.get(id)
+            data = {
+                'chapter_id': resource.chapter_id,
+                'title': resource.title,
+                'content': resource.content,
+                'file': 'file/resource/' + str(resource.id)
+            }
+            return pretty_result(code.OK, data=data)
+        except SQLAlchemyError as e:
+            print(e)
+            db.session.rollback()
+            return pretty_result(code.DB_ERROR)
+
+    def put(self, id):
+        try:
+            resource = ResourceModel.query.get(id)
+            chapter = ChapterModel.query.get(resource.chapter_id)
             course = CourseModel.query.get(chapter.course_id)
             if verify_id_token(self.token_parser, course.teacher_id) is False \
                     and verify_id_token(self.token_parser, course.assistant_id) is False:
@@ -115,11 +110,14 @@ class ChapterNoResource(Resource):
 
             self.parser.add_argument('title', type=str, location="args")
             self.parser.add_argument('content', type=str, location="form")
+            self.parser.add_argument('file', type=FileStorage, location="files")
             args = self.parser.parse_args()
 
-            resource = ResourceModel.query.filter_by(course_id=chapter_id, no=no).first()
-            resource.title = args['title']
-            resource.content = args['content']
+            if args['title'] is not None:
+                resource.title = args['title']
+            if args['content'] is not None:
+                resource.content = args['content']
+            file.upload_resource(args['file'], resource)
             db.session.commit()
             return pretty_result(code.OK)
         except SQLAlchemyError as e:
@@ -127,15 +125,15 @@ class ChapterNoResource(Resource):
             db.session.rollback()
             return pretty_result(code.DB_ERROR)
 
-    def delete(self, chapter_id, no):
+    def delete(self, id):
         try:
-            chapter = ChapterModel.query.get(chapter_id)
+            resource = ResourceModel.query.get(id)
+            chapter = ChapterModel.query.get(resource.chapter_id)
             course = CourseModel.query.get(chapter.course_id)
             if verify_id_token(self.token_parser, course.teacher_id) is False \
                     and verify_id_token(self.token_parser, course.assistant_id) is False:
                 return pretty_result(code.AUTHORIZATION_ERROR)
 
-            resource = ResourceModel.query.filter_by(course_id=chapter_id, no=no).first()
             db.session.delete(resource)
             db.session.commit()
             return pretty_result(code.OK)
