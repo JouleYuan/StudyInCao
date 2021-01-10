@@ -21,6 +21,7 @@ class AllResource(Resource):
                     'chapter_id': resource.chapter_id,
                     'title': resource.title,
                     'content': resource.content,
+                    'time': str(resource.time),
                     'file': 'file/resource/' + str(resource.id)
                 }
                 for resource in resources
@@ -53,6 +54,7 @@ class CourseResource(Resource):
                         'id': resource.id,
                         'title': resource.title,
                         'content': resource.content,
+                        'time': str(resource.time),
                         'file': 'file/resource/' + str(resource.id)
                     }
                     for resource in resources
@@ -78,6 +80,7 @@ class ChapterResource(Resource):
                     'id': resource.id,
                     'title': resource.title,
                     'content': resource.content,
+                    'time': str(resource.time),
                     'file': 'file/resource/' + str(resource.id)
                 }
                 for resource in resources
@@ -124,6 +127,7 @@ class IdResource(Resource):
                 'chapter_id': resource.chapter_id,
                 'title': resource.title,
                 'content': resource.content,
+                'time': str(resource.time),
                 'file': 'file/resource/' + str(resource.id)
             }
             return pretty_result(code.OK, data=data)
