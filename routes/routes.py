@@ -42,8 +42,9 @@ api.add_resource(chapter.CourseChapter, 'chapter/<int:course_id>')
 api.add_resource(chapter.Chapter, 'chapter/<int:course_id>/<int:no>')
 
 api.add_resource(resource.AllResource, 'resource')
-api.add_resource(resource.ChapterResource, 'resource/<int:chapter_id>')
-api.add_resource(resource.IdResource, 'resource/<int:id>')
+api.add_resource(resource.CourseResource, 'resource/course/<int:course_id>')
+api.add_resource(resource.ChapterResource, 'resource/chapter/<int:chapter_id>')
+api.add_resource(resource.IdResource, 'resource/id/<int:id>')
 
 api.add_resource(image.CourseImage, 'image/course/<int:id>')
 api.add_resource(image.StudentImage, 'image/student/<string:id>')

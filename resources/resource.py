@@ -32,6 +32,39 @@ class AllResource(Resource):
             return pretty_result(code.DB_ERROR)
 
 
+class CourseResource(Resource):
+    def __init__(self):
+        self.parser = RequestParser()
+        self.token_parser = RequestParser()
+
+    def get(self, course_id):
+        try:
+            data = []
+            chapters = ChapterModel.query.filter_by(course_id=course_id).all()
+            for chapter in chapters:
+                chapter_data = {
+                    'chapter_id': chapter.id,
+                    'chapter_no': chapter.no,
+                    'resources': []
+                }
+                resources = ResourceModel.query.filter_by(chapter_id=chapter.id).all()
+                chapter_data['resources'] = [
+                    {
+                        'id': resource.id,
+                        'title': resource.title,
+                        'content': resource.content,
+                        'file': 'file/resource/' + str(resource.id)
+                    }
+                    for resource in resources
+                ]
+                data.append(chapter_data)
+            return pretty_result(code.OK, data=data)
+        except SQLAlchemyError as e:
+            print(e)
+            db.session.rollback()
+            return pretty_result(code.DB_ERROR)
+
+
 class ChapterResource(Resource):
     def __init__(self):
         self.parser = RequestParser()
