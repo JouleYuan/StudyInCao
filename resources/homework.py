@@ -4,26 +4,26 @@ from sqlalchemy.exc import SQLAlchemyError
 from models import db
 from models.course import CourseModel
 from models.chapter import ChapterModel
-from models.resource import ResourceModel
-from common import code, pretty_result, file
+from models.homework import HomeworkModel
+from common import code, pretty_result
 from common.auth import verify_id_token
-from werkzeug.datastructures import FileStorage
+import datetime
 
 
-class AllResource(Resource):
+class AllHomework(Resource):
     def get(self):
         try:
-            resources = ResourceModel.query.all()
+            homeworks = HomeworkModel.query.all()
             data = [
                 {
-                    'id': resource.id,
-                    'chapter_id': resource.chapter_id,
-                    'title': resource.title,
-                    'content': resource.content,
-                    'time': str(resource.time),
-                    'file': 'file/resource/' + str(resource.id)
+                    'id': homework.id,
+                    'chapter_id': homework.chapter_id,
+                    'title': homework.title,
+                    'content': homework.content,
+                    'time': str(homework.time),
+                    'deadline': str(homework.time)
                 }
-                for resource in resources
+                for homework in homeworks
             ]
             return pretty_result(code.OK, data=data)
         except SQLAlchemyError as e:
@@ -32,7 +32,7 @@ class AllResource(Resource):
             return pretty_result(code.DB_ERROR)
 
 
-class CourseResource(Resource):
+class CourseHomework(Resource):
     def __init__(self):
         self.parser = RequestParser()
         self.token_parser = RequestParser()
@@ -47,16 +47,16 @@ class CourseResource(Resource):
                     'chapter_no': chapter.no,
                     'resources': []
                 }
-                resources = ResourceModel.query.filter_by(chapter_id=chapter.id).all()
+                homeworks = HomeworkModel.query.filter_by(chapter_id=chapter.id).all()
                 chapter_data['resources'] = [
                     {
-                        'id': resource.id,
-                        'title': resource.title,
-                        'content': resource.content,
-                        'time': str(resource.time),
-                        'file': 'file/resource/' + str(resource.id)
+                        'id': homework.id,
+                        'title': homework.title,
+                        'content': homework.content,
+                        'time': str(homework.time),
+                        'deadline': str(homework.time)
                     }
-                    for resource in resources
+                    for homework in homeworks
                 ]
                 data.append(chapter_data)
             return pretty_result(code.OK, data=data)
@@ -66,23 +66,23 @@ class CourseResource(Resource):
             return pretty_result(code.DB_ERROR)
 
 
-class ChapterResource(Resource):
+class ChapterHomework(Resource):
     def __init__(self):
         self.parser = RequestParser()
         self.token_parser = RequestParser()
 
     def get(self, chapter_id):
         try:
-            resources = ResourceModel.query.filter_by(chapter_id=chapter_id).all()
+            homeworks = HomeworkModel.query.filter_by(chapter_id=chapter_id).all()
             data = [
                 {
-                    'id': resource.id,
-                    'title': resource.title,
-                    'content': resource.content,
-                    'time': str(resource.time),
-                    'file': 'file/resource/' + str(resource.id)
+                    'id': homework.id,
+                    'title': homework.title,
+                    'content': homework.content,
+                    'time': str(homework.time),
+                    'deadline': str(homework.time)
                 }
-                for resource in resources
+                for homework in homeworks
             ]
             return pretty_result(code.OK, data=data)
         except SQLAlchemyError as e:
@@ -99,13 +99,17 @@ class ChapterResource(Resource):
                 return pretty_result(code.AUTHORIZATION_ERROR)
 
             self.parser.add_argument('title', type=str, location="args")
+            self.parser.add_argument('content', type=str, location="form")
+            self.parser.add_argument('deadline', type=int, location="args")
             args = self.parser.parse_args()
 
-            resource = ResourceModel(
+            homework = HomeworkModel(
                 chapter_id=chapter_id,
-                title=args['title']
+                title=args['title'],
+                content=args['content'],
+                deadline=datetime.datetime.fromtimestamp(args['deadline'])
             )
-            db.session.add(resource)
+            db.session.add(homework)
             db.session.commit()
             return pretty_result(code.OK)
         except SQLAlchemyError as e:
@@ -114,20 +118,20 @@ class ChapterResource(Resource):
             return pretty_result(code.DB_ERROR)
 
 
-class IdResource(Resource):
+class IdHomework(Resource):
     def __init__(self):
         self.parser = RequestParser()
         self.token_parser = RequestParser()
 
     def get(self, id):
         try:
-            resource = ResourceModel.query.get(id)
+            homework = HomeworkModel.query.get(id)
             data = {
-                'chapter_id': resource.chapter_id,
-                'title': resource.title,
-                'content': resource.content,
-                'time': str(resource.time),
-                'file': 'file/resource/' + str(resource.id)
+                'chapter_id': homework.chapter_id,
+                'title': homework.title,
+                'content': homework.content,
+                'time': str(homework.time),
+                'deadline': str(homework.time)
             }
             return pretty_result(code.OK, data=data)
         except SQLAlchemyError as e:
@@ -137,8 +141,8 @@ class IdResource(Resource):
 
     def put(self, id):
         try:
-            resource = ResourceModel.query.get(id)
-            chapter = ChapterModel.query.get(resource.chapter_id)
+            homework = HomeworkModel.query.get(id)
+            chapter = ChapterModel.query.get(homework.chapter_id)
             course = CourseModel.query.get(chapter.course_id)
             if verify_id_token(self.token_parser, course.teacher_id) is False \
                     and verify_id_token(self.token_parser, course.assistant_id) is False:
@@ -146,14 +150,15 @@ class IdResource(Resource):
 
             self.parser.add_argument('title', type=str, location="args")
             self.parser.add_argument('content', type=str, location="form")
-            self.parser.add_argument('file', type=FileStorage, location="files")
+            self.parser.add_argument('deadline', type=int, location="args")
             args = self.parser.parse_args()
 
             if args['title'] is not None:
-                resource.title = args['title']
+                homework.title = args['title']
             if args['content'] is not None:
-                resource.content = args['content']
-            file.upload_resource(args['file'], resource)
+                homework.content = args['content']
+            if args['deadline'] is not None:
+                homework.deadline = args['deadline']
             db.session.commit()
             return pretty_result(code.OK)
         except SQLAlchemyError as e:
@@ -163,14 +168,14 @@ class IdResource(Resource):
 
     def delete(self, id):
         try:
-            resource = ResourceModel.query.get(id)
-            chapter = ChapterModel.query.get(resource.chapter_id)
+            homework = HomeworkModel.query.get(id)
+            chapter = ChapterModel.query.get(homework.chapter_id)
             course = CourseModel.query.get(chapter.course_id)
             if verify_id_token(self.token_parser, course.teacher_id) is False \
                     and verify_id_token(self.token_parser, course.assistant_id) is False:
                 return pretty_result(code.AUTHORIZATION_ERROR)
 
-            db.session.delete(resource)
+            db.session.delete(homework)
             db.session.commit()
             return pretty_result(code.OK)
         except SQLAlchemyError as e:

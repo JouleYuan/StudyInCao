@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask_restful import Api
 from resources import auth, user, student, teacher, course, grade,\
-    courseList, chapter, resource, image, post, reply, file
+    courseList, chapter, resource, image, post, reply, file, homework, notification
 
 routes = Blueprint('routes', __name__)
 
@@ -46,6 +46,11 @@ api.add_resource(resource.CourseResource, 'resource/course/<int:course_id>')
 api.add_resource(resource.ChapterResource, 'resource/chapter/<int:chapter_id>')
 api.add_resource(resource.IdResource, 'resource/id/<int:id>')
 
+api.add_resource(homework.AllHomework, 'homework')
+api.add_resource(homework.CourseHomework, 'homework/course/<int:course_id>')
+api.add_resource(homework.ChapterHomework, 'homework/chapter/<int:chapter_id>')
+api.add_resource(homework.IdHomework, 'homework/id/<int:id>')
+
 api.add_resource(image.CourseImage, 'image/course/<int:id>')
 api.add_resource(image.StudentImage, 'image/student/<string:id>')
 api.add_resource(image.TeacherImage, 'image/teacher/<string:id>')
@@ -57,3 +62,5 @@ api.add_resource(post.Post, 'post/<int:post_id>')
 
 api.add_resource(reply.Replies, 'replies/<int:post_id>')
 # api.add_resource(reply.Reply, 'reply/<int:reply_id>')
+
+api.add_resource(notification.StudentNotification, 'notification/<string:student_id>')
