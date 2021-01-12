@@ -23,7 +23,7 @@ class StudentNotification(Resource):
                 'content_type': notification.content_type,
                 'content_title': notification.content_title,
                 'state': notification.state,
-                'time': notification.time,
+                'time': str(notification.time),
                 'is_read': notification.is_read,
             } for notification in notifications]
             return pretty_result(code.OK, data=data)
