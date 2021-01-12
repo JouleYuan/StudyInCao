@@ -9,5 +9,5 @@ class NotificationModel(db.Model):
     content_type = db.Column(db.String(20))
     content_title = db.Column(db.String(50))
     state = db.Column(db.Integer)
-    time = db.Column(db.DateTime, server_default=func.now())
+    time = db.Column(db.DateTime, server_default=func.now(), default=func.now())
     is_read = db.Column(db.Integer, default=0, server_default='0')

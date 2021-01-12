@@ -26,6 +26,7 @@ class StudentNotification(Resource):
                 'time': notification.time,
                 'is_read': notification.is_read,
             } for notification in notifications]
+            return pretty_result(code.OK, data=data)
         except SQLAlchemyError as e:
             print(e)
             db.session.rollback()

@@ -5,6 +5,8 @@ from models import db
 from models.course import CourseModel
 from models.chapter import ChapterModel
 from models.resource import ResourceModel
+from models.course_student import CourseStudentModel
+from models.notification import NotificationModel
 from common import code, pretty_result, file
 from common.auth import verify_id_token
 from werkzeug.datastructures import FileStorage
@@ -99,13 +101,28 @@ class ChapterResource(Resource):
                 return pretty_result(code.AUTHORIZATION_ERROR)
 
             self.parser.add_argument('title', type=str, location="args")
+            self.parser.add_argument('content', type=str, location="form")
+            self.parser.add_argument('file', type=FileStorage, location="files")
             args = self.parser.parse_args()
 
             resource = ResourceModel(
                 chapter_id=chapter_id,
-                title=args['title']
+                title=args['title'],
+                content=args['content'],
             )
+            file.upload_resource(args['file'], resource)
             db.session.add(resource)
+
+            students = CourseStudentModel.query.filter_by(course_id=course.id).all()
+            for student in students:
+                notification = NotificationModel(
+                    student_id=student.student_id,
+                    content_type="资料",
+                    content_title=args['title'],
+                    state=1,
+                )
+                db.session.add(notification)
+
             db.session.commit()
             return pretty_result(code.OK)
         except SQLAlchemyError as e:

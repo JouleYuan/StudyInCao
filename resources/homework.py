@@ -5,6 +5,9 @@ from models import db
 from models.course import CourseModel
 from models.chapter import ChapterModel
 from models.homework import HomeworkModel
+from models.course_student import CourseStudentModel
+from models.homework_student import HomeworkStudentModel
+from models.notification import NotificationModel
 from common import code, pretty_result
 from common.auth import verify_id_token
 import datetime
@@ -110,6 +113,22 @@ class ChapterHomework(Resource):
                 deadline=datetime.datetime.fromtimestamp(args['deadline'])
             )
             db.session.add(homework)
+
+            students = CourseStudentModel.query.filter_by(course_id=course.id).all()
+            for student in students:
+                homework_student = HomeworkStudentModel(
+                    homework_id=homework.id,
+                    student_id=student.student_id,
+                )
+                db.session.add(homework_student)
+                notification = NotificationModel(
+                    student_id=student.student_id,
+                    content_type="作业",
+                    content_title=args['title'],
+                    state=1,
+                )
+                db.session.add(notification)
+
             db.session.commit()
             return pretty_result(code.OK)
         except SQLAlchemyError as e:

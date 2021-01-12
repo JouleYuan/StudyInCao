@@ -8,5 +8,5 @@ class HomeworkModel(db.Model):
     chapter_id = db.Column(db.Integer)
     title = db.Column(db.String(50))
     content = db.Column(db.Text, nullable=True)
-    time = db.Column(db.DateTime, server_default=func.now())
+    time = db.Column(db.DateTime, server_default=func.now(), default=func.now())
     deadline = db.Column(db.DateTime)
