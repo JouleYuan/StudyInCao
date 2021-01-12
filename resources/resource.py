@@ -110,10 +110,10 @@ class ChapterResource(Resource):
                 title=args['title'],
                 content=args['content'],
             )
-            file.upload_resource(args['file'], resource)
             db.session.add(resource)
 
             students = CourseStudentModel.query.filter_by(course_id=course.id).all()
+            file.upload_resource(args['file'], resource)
             for student in students:
                 notification = NotificationModel(
                     student_id=student.student_id,
