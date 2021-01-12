@@ -31,3 +31,18 @@ class StudentNotification(Resource):
             print(e)
             db.session.rollback()
             return pretty_result(code.DB_ERROR)
+
+    def put(self, student_id):
+        if (verify_student_token(self.token_parser) and verify_id_token(self.token_parser, student_id)) is False:
+            return pretty_result(code.AUTHORIZATION_ERROR)
+
+        try:
+            notifications = NotificationModel.query.filter_by(student_id=student_id).all()
+            for notification in notifications:
+                notification.is_read = 1
+            db.session.commit()
+            return pretty_result(code.OK)
+        except SQLAlchemyError as e:
+            print(e)
+            db.session.rollback()
+            return pretty_result(code.DB_ERROR)
