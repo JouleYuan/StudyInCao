@@ -151,6 +151,80 @@ class Course(Resource):
             return pretty_result(code.DB_ERROR)
 
 
+class CourseClassification(Resource):
+    def get(self, classification):
+        try:
+            data = []
+            courses = CourseModel.query.all()
+            for course in courses:
+                teacher = TeacherModel.query.get(course.teacher_id)
+                if teacher.school != classification:
+                    continue
+                avatar = None
+                if course.avatar is not None:
+                    avatar = 'image/course/' + str(course.id)
+                data.append({
+                    'id': course.id,
+                    'name': course.name,
+                    'teacher_id': course.teacher_id,
+                    'teacher_name': teacher.name,
+                    'assistant_id': course.assistant_id,
+                    'time': course.time,
+                    'address': course.address,
+                    'classification': teacher.school,
+                    'general': course.general,
+                    'description': course.description,
+                    'introduce': course.introduce,
+                    'plan': course.plan,
+                    'material': course.material,
+                    'exam': course.exam,
+                    'request': course.request,
+                    'avatar': avatar
+                })
+            return pretty_result(code.OK, data=data)
+        except SQLAlchemyError as e:
+            print(e)
+            db.session.rollback()
+            return pretty_result(code.DB_ERROR)
+
+
+class CourseSearch(Resource):
+    def get(self, keyword):
+        try:
+            data = []
+            courses = CourseModel.query.all()
+            for course in courses:
+                if keyword not in course.name:
+                    continue
+                teacher = TeacherModel.query.get(course.teacher_id)
+                avatar = None
+                if course.avatar is not None:
+                    avatar = 'image/course/' + str(course.id)
+                data.append({
+                    'id': course.id,
+                    'name': course.name,
+                    'teacher_id': course.teacher_id,
+                    'teacher_name': teacher.name,
+                    'assistant_id': course.assistant_id,
+                    'time': course.time,
+                    'address': course.address,
+                    'classification': teacher.school,
+                    'general': course.general,
+                    'description': course.description,
+                    'introduce': course.introduce,
+                    'plan': course.plan,
+                    'material': course.material,
+                    'exam': course.exam,
+                    'request': course.request,
+                    'avatar': avatar
+                })
+            return pretty_result(code.OK, data=data)
+        except SQLAlchemyError as e:
+            print(e)
+            db.session.rollback()
+            return pretty_result(code.DB_ERROR)
+
+
 class CourseDetail(Resource):
     def __init__(self):
         self.parser = RequestParser()

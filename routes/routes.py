@@ -27,6 +27,8 @@ api.add_resource(teacher.TeacherDetail, '/teacher/<string:id>/detail')
 api.add_resource(course.AllCourses, '/course')
 api.add_resource(course.PostCourse, '/course')
 api.add_resource(course.Course, '/course/<int:id>')
+api.add_resource(course.CourseClassification, '/course/classification/<string:classification>')
+api.add_resource(course.CourseSearch, 'course/search/<string:keyword>')
 api.add_resource(course.CourseDetail, 'course/<int:id>/detail')
 api.add_resource(course.CourseStudent, 'course/<int:course_id>/<string:student_id>')
 
