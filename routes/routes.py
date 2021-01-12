@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask_restful import Api
 from resources import auth, user, student, teacher, course, grade,\
-    courseList, chapter, resource, image, post, reply, file, homework, notification
+    courseList, chapter, resource, image, post, reply, file, homework, notification, todolist
 
 routes = Blueprint('routes', __name__)
 
@@ -71,3 +71,5 @@ api.add_resource(reply.Replies, 'replies/<int:post_id>')
 # api.add_resource(reply.Reply, 'reply/<int:reply_id>')
 
 api.add_resource(notification.StudentNotification, 'notification/<string:student_id>')
+
+api.add_resource(todolist.TodoList, 'todolist/<string:student_id>')
