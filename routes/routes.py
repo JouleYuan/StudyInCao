@@ -52,12 +52,17 @@ api.add_resource(homework.AllHomework, 'homework')
 api.add_resource(homework.CourseHomework, 'homework/course/<int:course_id>')
 api.add_resource(homework.ChapterHomework, 'homework/chapter/<int:chapter_id>')
 api.add_resource(homework.IdHomework, 'homework/id/<int:id>')
+api.add_resource(homework.UploadHomework, 'homework/upload/<int:homework_id>/<string:student_id>')
+api.add_resource(homework.ReviewHomework, 'homework/review/<int:homework_id>/<string:student_id>')
+api.add_resource(homework.HomeworkGrade, 'homework/grade/all/<int:homework_id>')
+api.add_resource(homework.StudentHomeworkGrade, 'homework/grade/student/<int:homework_id>/<string:student_id>')
 
 api.add_resource(image.CourseImage, 'image/course/<int:id>')
 api.add_resource(image.StudentImage, 'image/student/<string:id>')
 api.add_resource(image.TeacherImage, 'image/teacher/<string:id>')
 
 api.add_resource(file.ResourceFile, 'file/resource/<int:id>')
+api.add_resource(file.HomeworkFile, 'file/homework/<int:id>')
 
 api.add_resource(post.Posts, 'posts/<int:course_id>')
 api.add_resource(post.Post, 'post/<int:post_id>')

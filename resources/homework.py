@@ -8,9 +8,11 @@ from models.homework import HomeworkModel
 from models.course_student import CourseStudentModel
 from models.homework_student import HomeworkStudentModel
 from models.notification import NotificationModel
-from common import code, pretty_result
-from common.auth import verify_id_token
+from models.student import StudentModel
+from common import code, pretty_result, file
+from common.auth import verify_id_token, verify_student_token, verify_admin_token
 import datetime
+from werkzeug.datastructures import FileStorage
 
 
 class AllHomework(Resource):
@@ -197,6 +199,119 @@ class IdHomework(Resource):
             db.session.delete(homework)
             db.session.commit()
             return pretty_result(code.OK)
+        except SQLAlchemyError as e:
+            print(e)
+            db.session.rollback()
+            return pretty_result(code.DB_ERROR)
+
+
+class UploadHomework(Resource):
+    def __init__(self):
+        self.parser = RequestParser()
+        self.token_parser = RequestParser()
+
+    def put(self, homework_id, student_id):
+        if (verify_student_token(self.token_parser) and verify_id_token(self.token_parser, student_id)) is False:
+            return pretty_result(code.AUTHORIZATION_ERROR)
+
+        self.parser.add_argument('text', type=str, location="form")
+        self.parser.add_argument('file', type=FileStorage, location="files")
+        args = self.parser.parse_args()
+
+        try:
+            homework_student = HomeworkStudentModel.query. \
+                filter_by(homework_id=homework_id, student_id=student_id).first()
+            if args['text'] is not None:
+                homework_student.text = args['text']
+            file.upload_homework(args['file'], homework_student)
+            db.session.commit()
+            return pretty_result(code.OK)
+        except SQLAlchemyError as e:
+            print(e)
+            db.session.rollback()
+            return pretty_result(code.DB_ERROR)
+
+
+class ReviewHomework(Resource):
+    def __init__(self):
+        self.parser = RequestParser()
+        self.token_parser = RequestParser()
+
+    def put(self, homework_id, student_id):
+        try:
+            homework = HomeworkModel.query.get(homework_id)
+            chapter = ChapterModel.query.get(homework.chapter_id)
+            course = CourseModel.query.get(chapter.course_id)
+            if verify_id_token(self.token_parser, course.teacher_id) is False \
+                    and verify_id_token(self.token_parser, course.assistant_id) is False:
+                return pretty_result(code.AUTHORIZATION_ERROR)
+
+            self.parser.add_argument('grade', type=int, location="args")
+            args = self.parser.parse_args()
+
+            homework_student = HomeworkStudentModel.query. \
+                filter_by(homework_id=homework_id, student_id=student_id).first()
+            homework_student.grade = args['grade']
+            db.session.commit()
+            return pretty_result(code.OK)
+        except SQLAlchemyError as e:
+            print(e)
+            db.session.rollback()
+            return pretty_result(code.DB_ERROR)
+
+
+class HomeworkGrade(Resource):
+    def __init__(self):
+        self.parser = RequestParser()
+        self.token_parser = RequestParser()
+
+    def get(self, homework_id):
+        try:
+            homework = HomeworkModel.query.get(homework_id)
+            chapter = ChapterModel.query.get(homework.chapter_id)
+            course = CourseModel.query.get(chapter.course_id)
+            if verify_id_token(self.token_parser, course.teacher_id) is False \
+                    and verify_id_token(self.token_parser, course.assistant_id) is False \
+                    and verify_admin_token(self.token_parser) is False:
+                return pretty_result(code.AUTHORIZATION_ERROR)
+
+            data = []
+            homework_students = HomeworkStudentModel.query.filter_by(homework_id=homework_id).all()
+            for homework_student in homework_students:
+                file = None
+                if homework_student.file is not None:
+                    file = 'file/homework/' + str(homework_student.id)
+                student = StudentModel.query.get(homework_student.student_id)
+                data.append({
+                    'id': student.id,
+                    'name': student.name,
+                    'gender': student.gender,
+                    'class_name': student.class_name,
+                    'text': homework_student.text,
+                    'file': file,
+                    'grade': homework_student.grade
+                })
+            return pretty_result(code.OK, data=data)
+        except SQLAlchemyError as e:
+            print(e)
+            db.session.rollback()
+            return pretty_result(code.DB_ERROR)
+
+
+class StudentHomeworkGrade(Resource):
+    def __init__(self):
+        self.parser = RequestParser()
+        self.token_parser = RequestParser()
+
+    def get(self, homework_id, student_id):
+        if (verify_student_token(self.token_parser) and verify_id_token(self.token_parser, student_id)) is False:
+            return pretty_result(code.AUTHORIZATION_ERROR)
+
+        try:
+            homework_student = HomeworkStudentModel.query.\
+                filter_by(homework_id=homework_id, student_id=student_id).first()
+            data = {'grade': homework_student.grade}
+            return pretty_result(code.OK, data=data)
         except SQLAlchemyError as e:
             print(e)
             db.session.rollback()
