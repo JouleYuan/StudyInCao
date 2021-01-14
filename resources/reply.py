@@ -4,7 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from models import db
 from models.reply import ReplyModel
 from common import code, pretty_result, file
-from common.auth import verify_admin_token, verify_id_token
+from common.auth import verify_student_token, verify_teacher_token
 from werkzeug.datastructures import FileStorage
 
 class Replies(Resource):
@@ -31,7 +31,7 @@ class Replies(Resource):
     
     def post(self, post_id):
         try:
-            if verify_admin_token(self.token_parser) is False:
+            if verify_student_token(self.token_parser) and verify_teacher_token(self.token_parser) is False:
                 return pretty_result(code.AUTHORIZATION_ERROR)
             self.parser.add_argument('user_id', type=int, location='args')
             self.parser.add_argument('content', type=str, location='args')
@@ -56,7 +56,7 @@ class Reply(Resource):
         self.token_parser = RequestParser()
 
     def delete(self, reply_id):
-        if verify_admin_token(self.token_parser) is False:
+        if verify_student_token(self.token_parser) and verify_teacher_token(self.token_parser) is False:
             return pretty_result(code.AUTHORIZATION_ERROR)
 
         try:
