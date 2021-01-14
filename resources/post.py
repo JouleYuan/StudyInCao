@@ -4,7 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from models import db
 from models.post import PostModel
 from common import code, pretty_result, file
-from common.auth import verify_admin_token, verify_id_token
+from common.auth import verify_admin_token, verify_login_token
 from werkzeug.datastructures import FileStorage
 
 class Posts(Resource):
@@ -33,7 +33,7 @@ class Posts(Resource):
     
     def post(self, course_id):
         try:
-            if verify_admin_token(self.token_parser) is False:
+            if verify_login_token(self.token_parser) is False:
                 return pretty_result(code.AUTHORIZATION_ERROR)
             self.parser.add_argument('user_id', type=int, location='args')
             self.parser.add_argument('title', type=str, location='args')
@@ -79,7 +79,7 @@ class Post(Resource):
             return pretty_result(code.DB_ERROR)
         
     def delete(self, post_id):
-        if verify_admin_token(self.token_parser) is False:
+        if verify_login_token(self.token_parser) is False:
             return pretty_result(code.AUTHORIZATION_ERROR)
 
         try:
