@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask_restful import Api
-from resources import auth, user, student, teacher, course, grade, courseList, chapter, resource, image, post, reply
+from resources import auth, user, student, teacher, course, grade,\
+    courseList, chapter, resource, image, post, reply, file, homework, notification, todolist
 
 routes = Blueprint('routes', __name__)
 
@@ -26,6 +27,8 @@ api.add_resource(teacher.TeacherDetail, '/teacher/<string:id>/detail')
 api.add_resource(course.AllCourses, '/course')
 api.add_resource(course.PostCourse, '/course')
 api.add_resource(course.Course, '/course/<int:id>')
+api.add_resource(course.CourseClassification, '/course/classification/<string:classification>')
+api.add_resource(course.CourseSearch, 'course/search/<string:keyword>')
 api.add_resource(course.CourseDetail, 'course/<int:id>/detail')
 api.add_resource(course.CourseStudent, 'course/<int:course_id>/<string:student_id>')
 
@@ -41,14 +44,32 @@ api.add_resource(chapter.CourseChapter, 'chapter/<int:course_id>')
 api.add_resource(chapter.Chapter, 'chapter/<int:course_id>/<int:no>')
 
 api.add_resource(resource.AllResource, 'resource')
-api.add_resource(resource.ChapterResource, 'resource/<int:chapter_id>')
-api.add_resource(resource.ChapterNoResource, 'resource/<int:chapter_id>/<int:no>')
+api.add_resource(resource.CourseResource, 'resource/course/<int:course_id>')
+api.add_resource(resource.ChapterResource, 'resource/chapter/<int:chapter_id>')
+api.add_resource(resource.IdResource, 'resource/id/<int:id>')
 
-api.add_resource(image.Image, 'image/<string:type>/<int:id>')
+api.add_resource(homework.AllHomework, 'homework')
+api.add_resource(homework.CourseHomework, 'homework/course/<int:course_id>')
+api.add_resource(homework.ChapterHomework, 'homework/chapter/<int:chapter_id>')
+api.add_resource(homework.IdHomework, 'homework/id/<int:id>')
+api.add_resource(homework.UploadHomework, 'homework/upload/<int:homework_id>/<string:student_id>')
+api.add_resource(homework.ReviewHomework, 'homework/review/<int:homework_id>/<string:student_id>')
+api.add_resource(homework.HomeworkGrade, 'homework/grade/all/<int:homework_id>')
+api.add_resource(homework.StudentHomeworkGrade, 'homework/grade/student/<int:homework_id>/<string:student_id>')
 
+api.add_resource(image.CourseImage, 'image/course/<int:id>')
+api.add_resource(image.StudentImage, 'image/student/<string:id>')
+api.add_resource(image.TeacherImage, 'image/teacher/<string:id>')
+
+api.add_resource(file.ResourceFile, 'file/resource/<int:id>')
+api.add_resource(file.HomeworkFile, 'file/homework/<int:id>')
 
 api.add_resource(post.Posts, 'posts/<int:course_id>')
 api.add_resource(post.Post, 'post/<int:post_id>')
 
 api.add_resource(reply.Replies, 'replies/<int:post_id>')
-#api.add_resource(reply.Reply, 'reply/<int:reply_id>')
+# api.add_resource(reply.Reply, 'reply/<int:reply_id>')
+
+api.add_resource(notification.StudentNotification, 'notification/<string:student_id>')
+
+api.add_resource(todolist.TodoList, 'todolist/<string:student_id>')

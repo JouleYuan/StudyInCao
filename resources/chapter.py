@@ -86,7 +86,7 @@ class Chapter(Resource):
             if chapter is not None:
                 return pretty_result(code.DB_ERROR)
 
-            chapter = CourseModel(
+            chapter = ChapterModel(
                 course_id=course_id,
                 no=no,
                 title=args['title']
