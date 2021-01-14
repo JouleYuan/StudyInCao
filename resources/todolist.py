@@ -21,9 +21,9 @@ class TodoList(Resource):
         self.token_parser = RequestParser()
 
     def get(self, student_id):
-        """if verify_id_token(self.token_parser, student_id) is False \
+        if (verify_id_token(self.token_parser, student_id) and verify_student_token(self.token_parser)) is False \
                 and verify_admin_token(self.token_parser) is False:
-            return pretty_result(code.AUTHORIZATION_ERROR)"""
+            return pretty_result(code.AUTHORIZATION_ERROR)
 
         try:
             data = []
