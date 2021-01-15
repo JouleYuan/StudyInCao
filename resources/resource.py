@@ -117,6 +117,7 @@ class ChapterResource(Resource):
             for student in students:
                 notification = NotificationModel(
                     student_id=student.student_id,
+                    course_id=course.id,
                     content_type="资料",
                     content_title=args['title'],
                     state=1,

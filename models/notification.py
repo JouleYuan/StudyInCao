@@ -6,6 +6,7 @@ class NotificationModel(db.Model):
     __tablename__ = 'notification'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     student_id = db.Column(db.String(10))
+    course_id = db.Column(db.Integer)
     content_type = db.Column(db.String(20))
     content_title = db.Column(db.String(50))
     content = db.Column(db.Text, nullable=True)

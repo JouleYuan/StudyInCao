@@ -19,16 +19,21 @@ class StudentNotification(Resource):
             return pretty_result(code.AUTHORIZATION_ERROR)
 
         try:
+            data = []
             notifications = NotificationModel.query.filter_by(student_id=student_id).all()
-            data = [{
-                'id': notification.id,
-                'content_type': notification.content_type,
-                'content_title': notification.content_title,
-                'content': notification.content,
-                'state': notification.state,
-                'time': str(notification.time),
-                'is_read': notification.is_read,
-            } for notification in notifications]
+            for notification in notifications:
+                course = CourseModel.query.get(notification.course_id)
+                data.append({
+                    'id': notification.id,
+                    'course_id': notification.course_id,
+                    'course_name': course.name,
+                    'content_type': notification.content_type,
+                    'content_title': notification.content_title,
+                    'content': notification.content,
+                    'state': notification.state,
+                    'time': str(notification.time),
+                    'is_read': notification.is_read,
+                })
             return pretty_result(code.OK, data=data)
         except SQLAlchemyError as e:
             print(e)
@@ -71,6 +76,7 @@ class CourseNotification(Resource):
             for student in students:
                 notification = NotificationModel(
                     student_id=student.student_id,
+                    course_id=course_id,
                     content_type="发布",
                     content_title=args['title'],
                     content=args['content'],

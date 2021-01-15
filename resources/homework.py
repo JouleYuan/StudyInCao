@@ -125,6 +125,7 @@ class ChapterHomework(Resource):
                 db.session.add(homework_student)
                 notification = NotificationModel(
                     student_id=student.student_id,
+                    course_id=course.id,
                     content_type="作业",
                     content_title=args['title'],
                     state=1,
