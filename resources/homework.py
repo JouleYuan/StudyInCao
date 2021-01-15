@@ -26,7 +26,7 @@ class AllHomework(Resource):
                     'title': homework.title,
                     'content': homework.content,
                     'time': str(homework.time),
-                    'deadline': str(homework.time)
+                    'deadline': str(homework.deadline)
                 }
                 for homework in homeworks
             ]
@@ -59,7 +59,7 @@ class CourseHomework(Resource):
                         'title': homework.title,
                         'content': homework.content,
                         'time': str(homework.time),
-                        'deadline': str(homework.time)
+                        'deadline': str(homework.deadline)
                     }
                     for homework in homeworks
                 ]
@@ -85,7 +85,7 @@ class ChapterHomework(Resource):
                     'title': homework.title,
                     'content': homework.content,
                     'time': str(homework.time),
-                    'deadline': str(homework.time)
+                    'deadline': str(homework.deadline)
                 }
                 for homework in homeworks
             ]
@@ -152,7 +152,7 @@ class IdHomework(Resource):
                 'title': homework.title,
                 'content': homework.content,
                 'time': str(homework.time),
-                'deadline': str(homework.time)
+                'deadline': str(homework.deadline)
             }
             return pretty_result(code.OK, data=data)
         except SQLAlchemyError as e:
