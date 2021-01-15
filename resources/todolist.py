@@ -30,7 +30,7 @@ class TodoList(Resource):
             homework_students = HomeworkStudentModel.query.filter_by(student_id=student_id).all()
             for homework_student in homework_students:
                 if homework_student.text is None and homework_student.file is None:
-                    homework = HomeworkModel.query.get(homework_student.id)
+                    homework = HomeworkModel.query.get(homework_student.homework_id)
                     if homework.deadline > datetime.datetime.now():
                         chapter = ChapterModel.query.get(homework.chapter_id)
                         course = CourseModel.query.get(chapter.course_id)
