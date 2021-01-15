@@ -60,7 +60,7 @@ class Reply(Resource):
             return pretty_result(code.AUTHORIZATION_ERROR)
 
         try:
-            reply = PostModel.query.get(reply_id)
+            reply = ReplyModel.query.get(reply_id)
             db.session.delete(reply)
             db.session.commit()
             return pretty_result(code.OK)

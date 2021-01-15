@@ -68,7 +68,7 @@ api.add_resource(post.Posts, 'posts/<int:course_id>')
 api.add_resource(post.Post, 'post/<int:post_id>')
 
 api.add_resource(reply.Replies, 'replies/<int:post_id>')
-# api.add_resource(reply.Reply, 'reply/<int:reply_id>')
+api.add_resource(reply.Reply, 'reply/<int:reply_id>')
 
 api.add_resource(notification.StudentNotification, 'notification/<string:student_id>')
 
