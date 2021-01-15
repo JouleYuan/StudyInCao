@@ -70,6 +70,7 @@ api.add_resource(post.Post, 'post/<int:post_id>')
 api.add_resource(reply.Replies, 'replies/<int:post_id>')
 api.add_resource(reply.Reply, 'reply/<int:reply_id>')
 
-api.add_resource(notification.StudentNotification, 'notification/<string:student_id>')
+api.add_resource(notification.StudentNotification, 'notification/student/<string:student_id>')
+api.add_resource(notification.CourseNotification, 'notification/course/<string:course_id>')
 
 api.add_resource(todolist.TodoList, 'todolist/<string:student_id>')
