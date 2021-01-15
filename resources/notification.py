@@ -61,6 +61,31 @@ class CourseNotification(Resource):
         self.parser = RequestParser()
         self.token_parser = RequestParser()
 
+    def get(self, course_id):
+        try:
+            course = CourseModel.query.get(course_id)
+            if verify_id_token(self.token_parser, course.teacher_id) is False \
+                    and verify_id_token(self.token_parser, course.assistant_id) is False:
+                return pretty_result(code.AUTHORIZATION_ERROR)
+
+            notification = NotificationModel.query.filter_by(course_id=course_id).all()
+            data = {
+                'id': notification.id,
+                'course_id': notification.course_id,
+                'course_name': course.name,
+                'content_type': notification.content_type,
+                'content_title': notification.content_title,
+                'content': notification.content,
+                'state': notification.state,
+                'time': str(notification.time),
+                'is_read': notification.is_read,
+            }
+            return pretty_result(code.OK, data=data)
+        except SQLAlchemyError as e:
+            print(e)
+            db.session.rollback()
+            return pretty_result(code.DB_ERROR)
+
     def post(self, course_id):
         try:
             course = CourseModel.query.get(course_id)
