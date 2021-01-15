@@ -310,7 +310,14 @@ class StudentHomeworkGrade(Resource):
         try:
             homework_student = HomeworkStudentModel.query.\
                 filter_by(homework_id=homework_id, student_id=student_id).first()
-            data = {'grade': homework_student.grade}
+            file = None
+            if homework_student.file is not None:
+                file = 'file/homework/' + str(homework_student.id)
+            data = {
+                'text': homework_student.text,
+                'file': file,
+                'grade': homework_student.grade,
+            }
             return pretty_result(code.OK, data=data)
         except SQLAlchemyError as e:
             print(e)
