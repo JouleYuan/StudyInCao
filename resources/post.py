@@ -4,7 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from models import db
 from models.post import PostModel
 from common import code, pretty_result, file
-from common.auth import verify_student_token, verify_teacher_token, verify_id_token
+from common.auth import verify_student_token, verify_teacher_token, verify_admin_token
 from werkzeug.datastructures import FileStorage
 
 class Posts(Resource):
@@ -79,7 +79,7 @@ class Post(Resource):
             return pretty_result(code.DB_ERROR)
         
     def delete(self, post_id):
-        if (verify_student_token(self.token_parser) or verify_teacher_token(self.token_parser)) is False:
+        if (verify_admin_token(self.token_parser) or verify_teacher_token(self.token_parser)) is False:
             return pretty_result(code.AUTHORIZATION_ERROR)
 
         try:
