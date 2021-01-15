@@ -24,6 +24,7 @@ class StudentNotification(Resource):
                 'id': notification.id,
                 'content_type': notification.content_type,
                 'content_title': notification.content_title,
+                'content': notification.content,
                 'state': notification.state,
                 'time': str(notification.time),
                 'is_read': notification.is_read,

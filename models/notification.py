@@ -8,6 +8,7 @@ class NotificationModel(db.Model):
     student_id = db.Column(db.String(10))
     content_type = db.Column(db.String(20))
     content_title = db.Column(db.String(50))
+    content = db.Column(db.Text, nullable=True)
     state = db.Column(db.Integer)
     time = db.Column(db.DateTime, server_default=func.now(), default=func.now())
     is_read = db.Column(db.Integer, default=0, server_default='0')
