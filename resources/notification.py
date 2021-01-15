@@ -68,8 +68,8 @@ class CourseNotification(Resource):
                     and verify_id_token(self.token_parser, course.assistant_id) is False:
                 return pretty_result(code.AUTHORIZATION_ERROR)
 
-            notification = NotificationModel.query.filter_by(course_id=course_id).all()
-            data = {
+            notifications = NotificationModel.query.filter_by(course_id=course_id).all()
+            data = [{
                 'id': notification.id,
                 'course_id': notification.course_id,
                 'course_name': course.name,
@@ -79,7 +79,7 @@ class CourseNotification(Resource):
                 'state': notification.state,
                 'time': str(notification.time),
                 'is_read': notification.is_read,
-            }
+            } for notification in notifications]
             return pretty_result(code.OK, data=data)
         except SQLAlchemyError as e:
             print(e)
