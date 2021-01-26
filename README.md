@@ -14,16 +14,19 @@ Create database studyincao and execute the database.sql file in mysql.
 
 ```
 CREAT DATABASE studyincao;
-SOURCE database.sql;
+SOURCE studyincao.sql;
 ```
 
 Create your own directory to store uploaded files. The file directory is shown as followed.
 
 ```
 file
-└── avatar
-    ├── student
-    └── teacher
+├── avatar
+│   ├── course
+│   ├── student
+│   └── teacher
+├── homework
+└── resource
 ```
 
 If you are to run this on Linux Server, input the following in the shell.
