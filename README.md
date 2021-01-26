@@ -1,8 +1,8 @@
-## StudyInCao - Back End
+# StudyInCao - Back End
 
 This is a flask-restful back end of the StudyInCao project for ZJU RE&SME courses.
 
-### Quick Start
+## Build
 
 Install the required dependencies.
 
@@ -28,6 +28,8 @@ file
 ├── homework
 └── resource
 ```
+
+## Run
 
 If you are to run this on Linux Server, input the following in the shell.
 
